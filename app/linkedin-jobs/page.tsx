@@ -1,8 +1,8 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-// 👇 Added 'X' icon
 import { MapPin, Linkedin, ArrowRight, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
+// 🔥 Motion wapas le aaye hain PC ke liye
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar'; 
 import JobHero from '@/components/JobHero'; 
@@ -33,6 +33,17 @@ export default function LinkedInJobsPage() {
   const [selectedCategory, setSelectedCategory] = useState("ESG");
   const [currentPage, setCurrentPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  
+  // 🔥 SMART CHECK: Kya yeh Mobile hai?
+  const [isMobile, setIsMobile] = useState(true); // Default true rakha taaki heavy load na ho start mein
+
+  useEffect(() => {
+    // Sirf client side par check karenge
+    const checkIsMobile = () => setIsMobile(window.innerWidth < 768);
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
   
   const jobsHeadingRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +99,7 @@ export default function LinkedInJobsPage() {
 
           <div className="container mx-auto px-4 pb-20 flex flex-col lg:flex-row gap-8">
             
-            {/* --- SIDEBAR (Hidden on Mobile) --- */}
+            {/* --- SIDEBAR (PC Only) --- */}
             <aside className="w-full lg:w-72 shrink-0 hidden lg:block">
               <div className="bg-white dark:bg-[#112240] rounded-xl border border-gray-200 dark:border-white/5 shadow-sm sticky top-24 overflow-hidden">
                  <div className="p-5 border-b border-gray-100 dark:border-white/5 flex justify-between items-center bg-gray-50 dark:bg-white/5">
@@ -112,7 +123,7 @@ export default function LinkedInJobsPage() {
                {/* Mobile Filter Button */}
                <button 
                   onClick={() => setIsFilterOpen(true)}
-                  className="lg:hidden w-full mb-6 flex items-center justify-center gap-2 bg-white dark:bg-[#112240] border border-gray-200 dark:border-white/10 p-4 rounded-xl font-bold shadow-sm text-slate-700 dark:text-white hover:bg-gray-50 transition-colors active:scale-95"
+                  className="lg:hidden w-full mb-6 flex items-center justify-center gap-2 bg-white dark:bg-[#112240] border border-gray-200 dark:border-white/10 p-4 rounded-xl font-bold text-slate-700 dark:text-white hover:bg-gray-50 transition-colors active:bg-gray-100 shadow-sm"
                >
                   <Filter size={20} className="text-[#0a66c2]" /> 
                   Filter Jobs ({selectedCategory})
@@ -127,7 +138,7 @@ export default function LinkedInJobsPage() {
 
                {loading ? (
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                   {[1,2,3,4,5,6].map(i => <div key={i} className="h-64 bg-gray-200 dark:bg-[#112240] rounded-xl animate-pulse"></div>)}
+                   {[1,2,3,4,5,6].map(i => <div key={i} className="h-64 bg-gray-200 dark:bg-white/5 rounded-xl animate-pulse"></div>)}
                  </div>
                ) : (
                  <>
@@ -137,13 +148,25 @@ export default function LinkedInJobsPage() {
                           const isExpanded = expandedId === job.job_id;
                           
                           return (
+                            // 🔥 HYBRID MOTION DIV: PC par full effects, Mobile par simple
                             <motion.div 
-                              // 🔥 OPTIMIZATION 1: Removed 'layout' prop
                               key={job.job_id} 
-                              onClick={() => setActiveId(job.job_id)}
+                              
+                              // 👇 1. Layout Animation: Sirf PC par chalegi (Smooth shuffling)
+                              layout={!isMobile} 
+                              
+                              // 👇 2. Hover Effect: Sirf PC par (Mobile par hover chipak jata hai)
+                              whileHover={!isMobile ? { scale: 1.02, y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" } : {}}
+                              
+                              // 👇 3. Tap Effect: Mobile ke liye subtle press effect
                               whileTap={{ scale: 0.98 }}
-                              animate={isActive ? { borderColor: "#0a66c2" } : { borderColor: "rgba(255,255,255,0.05)" }}
-                              className={`bg-white dark:bg-[#112240] rounded-xl border p-5 cursor-pointer flex flex-col relative overflow-hidden transition-colors ${isActive ? 'z-10 border-[#0a66c2] shadow-lg' : 'border-gray-200 dark:border-white/5 shadow-sm'}`}
+
+                              onClick={() => setActiveId(job.job_id)}
+                              
+                              // Active State Border (Smooth transition)
+                              animate={isActive ? { borderColor: "#0a66c2", boxShadow: "0px 0px 15px rgba(10, 102, 194, 0.2)" } : { borderColor: "rgba(255,255,255,0.05)", y: 0, boxShadow: "none" }}
+                              
+                              className={`bg-white dark:bg-[#112240] rounded-xl border p-5 cursor-pointer flex flex-col relative overflow-hidden transition-colors ${isActive ? 'z-10 border-[#0a66c2]' : 'border-gray-200 dark:border-white/5'}`}
                             >
                               <div className="flex justify-between items-start mb-4">
                                   <img 
@@ -174,7 +197,7 @@ export default function LinkedInJobsPage() {
                                     <p className="text-xs font-bold text-teal-600 dark:text-teal-400">FindMeWork</p>
                                   </div>
                                   <Link href={`/linkedin-jobs/${job.job_id}`}>
-                                    <button className="bg-[#0A192F] dark:bg-white text-white dark:text-[#0A192F] px-4 py-2 rounded-lg text-xs font-bold hover:opacity-90 transition-opacity flex items-center gap-1 shadow-md">View Details <ArrowRight size={12} /></button>
+                                    <button className="bg-[#0A192F] dark:bg-white text-white dark:text-[#0A192F] px-4 py-2 rounded-lg text-xs font-bold hover:opacity-90 transition-opacity flex items-center gap-1 shadow-sm">View Details <ArrowRight size={12} /></button>
                                   </Link>
                               </div>
                             </motion.div>
@@ -201,11 +224,10 @@ export default function LinkedInJobsPage() {
             </main>
           </div>
 
-          {/* 🔥 MOBILE FILTER DRAWER (Optimized Animation) */}
+          {/* 🔥 MOBILE FILTER DRAWER */}
           <AnimatePresence>
             {isFilterOpen && (
               <>
-                {/* 🔥 OPTIMIZATION 2: No Backdrop Blur (Faster) */}
                 <motion.div 
                    initial={{ opacity: 0 }}
                    animate={{ opacity: 1 }}
@@ -214,13 +236,12 @@ export default function LinkedInJobsPage() {
                    className="fixed inset-0 bg-black/60 z-[60] lg:hidden"
                 />
                 
-                {/* Drawer */}
                 <motion.div 
                    initial={{ x: "100%" }}
                    animate={{ x: 0 }}
                    exit={{ x: "100%" }}
-                   // 🔥 OPTIMIZATION 3: 'Tween' instead of Spring
-                   transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
+                   // Mobile par Fast Tween, PC se iska koi lena dena nahi
+                   transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
                    className="fixed right-0 top-0 bottom-0 w-[80%] max-w-sm bg-white dark:bg-[#0A192F] z-[70] shadow-2xl lg:hidden flex flex-col"
                 >
                    <div className="p-5 border-b border-gray-100 dark:border-white/10 flex justify-between items-center bg-gray-50 dark:bg-white/5">
@@ -241,7 +262,7 @@ export default function LinkedInJobsPage() {
                                 checked={selectedCategory === item.value} 
                                 onChange={() => {
                                   setSelectedCategory(item.value);
-                                  setIsFilterOpen(false); // Auto-close
+                                  setIsFilterOpen(false); 
                                 }} 
                                 className="w-5 h-5 accent-[#0a66c2]" 
                               />

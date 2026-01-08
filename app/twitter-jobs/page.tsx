@@ -1,7 +1,9 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+// 🔥 'X' icon imported
 import { MapPin, Twitter, ArrowRight, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
+// 🔥 Framer Motion for PC effects
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar'; 
 import JobHero from '@/components/JobHero'; 
@@ -32,6 +34,16 @@ export default function TwitterJobsPage() {
   const [selectedCategory, setSelectedCategory] = useState("ESG");
   const [currentPage, setCurrentPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  
+  // 🔥 HYBRID CHECK: Default true to prevent hydration mismatch, updates on mount
+  const [isMobile, setIsMobile] = useState(true);
+
+  useEffect(() => {
+    const checkIsMobile = () => setIsMobile(window.innerWidth < 768);
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
   
   const jobsHeadingRef = useRef<HTMLDivElement>(null);
 
@@ -87,7 +99,7 @@ export default function TwitterJobsPage() {
 
           <div className="container mx-auto px-4 pb-20 flex flex-col lg:flex-row gap-8">
             
-            {/* --- SIDEBAR (Desktop Only) --- */}
+            {/* --- SIDEBAR (PC Only) --- */}
             <aside className="w-full lg:w-72 shrink-0 hidden lg:block">
               <div className="bg-white dark:bg-[#112240] rounded-xl border border-gray-200 dark:border-white/5 shadow-sm sticky top-24 overflow-hidden">
                  <div className="p-5 border-b border-gray-100 dark:border-white/5 flex justify-between items-center bg-gray-50 dark:bg-white/5">
@@ -111,7 +123,7 @@ export default function TwitterJobsPage() {
                {/* Mobile Filter Button */}
                <button 
                   onClick={() => setIsFilterOpen(true)}
-                  className="lg:hidden w-full mb-6 flex items-center justify-center gap-2 bg-white dark:bg-[#112240] border border-gray-200 dark:border-white/10 p-4 rounded-xl font-bold shadow-sm text-slate-700 dark:text-white hover:bg-gray-50 transition-colors active:scale-95"
+                  className="lg:hidden w-full mb-6 flex items-center justify-center gap-2 bg-white dark:bg-[#112240] border border-gray-200 dark:border-white/10 p-4 rounded-xl font-bold text-slate-700 dark:text-white hover:bg-gray-50 transition-colors active:bg-gray-100 shadow-sm"
                >
                   <Filter size={20} className="text-black dark:text-white" /> 
                   Filter Threads ({selectedCategory})
@@ -136,20 +148,31 @@ export default function TwitterJobsPage() {
                           const isExpanded = expandedId === job.job_id;
                           
                           return (
+                            // 🔥 HYBRID MOTION: Effects only active on PC
                             <motion.div 
-                              // 🔥 OPTIMIZATION 1: 'layout' prop REMOVED. 
-                              // Yeh mobile lag ka sabse bada karan tha.
                               key={job.job_id} 
+                              
+                              // Layout animation only for PC
+                              layout={!isMobile} 
+
+                              // Hover effect only for PC
+                              whileHover={!isMobile ? { scale: 1.02, y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" } : {}}
+                              
+                              // Tap effect for Mobile
+                              whileTap={{ scale: 0.98 }}
+
                               onClick={() => setActiveId(job.job_id)}
-                              whileTap={{ scale: 0.98 }} // Mobile click feedback
-                              animate={isActive ? { borderColor: "#0a66c2" } : { borderColor: "rgba(255,255,255,0.05)" }}
-                              className={`bg-white dark:bg-[#112240] rounded-xl border p-5 cursor-pointer flex flex-col relative overflow-hidden transition-colors ${isActive ? 'z-10 border-[#0a66c2] shadow-lg' : 'border-gray-200 dark:border-white/5 shadow-sm'}`}
+                              
+                              // Active state logic
+                              animate={isActive ? { borderColor: "#0a66c2", boxShadow: "0px 0px 15px rgba(10, 102, 194, 0.2)" } : { borderColor: "rgba(255,255,255,0.05)", y: 0, boxShadow: "none" }}
+                              
+                              className={`bg-white dark:bg-[#112240] rounded-xl border p-5 cursor-pointer flex flex-col relative overflow-hidden transition-colors ${isActive ? 'z-10 border-[#0a66c2]' : 'border-gray-200 dark:border-white/5'}`}
                             >
                               <div className="flex justify-between items-start mb-4">
                                   <img 
                                      src={job.employer_logo || "https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg"} 
                                      alt="Logo" 
-                                     loading="lazy" // Lazy load images
+                                     loading="lazy"
                                      className="w-10 h-10 rounded-full shadow-sm object-contain bg-white p-1" 
                                      onError={(e) => (e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg")}
                                   />
@@ -174,7 +197,7 @@ export default function TwitterJobsPage() {
                                     <p className="text-xs font-bold text-teal-600 dark:text-teal-400">FindMeWork</p>
                                   </div>
                                   <Link href={`/twitter-jobs/${job.job_id}`}>
-                                    <button className="bg-[#0A192F] dark:bg-white text-white dark:text-[#0A192F] px-4 py-2 rounded-lg text-xs font-bold hover:opacity-90 transition-opacity flex items-center gap-1 shadow-md">View Details <ArrowRight size={12} /></button>
+                                    <button className="bg-[#0A192F] dark:bg-white text-white dark:text-[#0A192F] px-4 py-2 rounded-lg text-xs font-bold hover:opacity-90 transition-opacity flex items-center gap-1 shadow-sm">View Details <ArrowRight size={12} /></button>
                                   </Link>
                               </div>
                             </motion.div>
@@ -201,12 +224,10 @@ export default function TwitterJobsPage() {
             </main>
           </div>
 
-          {/* 🔥 MOBILE FILTER DRAWER (Optimized Animation) */}
+          {/* 🔥 OPTIMIZED MOBILE DRAWER */}
           <AnimatePresence>
             {isFilterOpen && (
               <>
-                {/* 🔥 OPTIMIZATION 2: Removed 'backdrop-blur-sm' */}
-                {/* Blur mobile GPU ko marta hai. Plain black/60 is faster. */}
                 <motion.div 
                    initial={{ opacity: 0 }}
                    animate={{ opacity: 1 }}
@@ -215,13 +236,10 @@ export default function TwitterJobsPage() {
                    className="fixed inset-0 bg-black/60 z-[60] lg:hidden"
                 />
                 
-                {/* Drawer */}
                 <motion.div 
                    initial={{ x: "100%" }}
                    animate={{ x: 0 }}
                    exit={{ x: "100%" }}
-                   // 🔥 OPTIMIZATION 3: 'Spring' animation hata kar 'Tween' use kiya
-                   // Ye physics calculate nahi karta, seedha animate karta hai.
                    transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
                    className="fixed right-0 top-0 bottom-0 w-[80%] max-w-sm bg-white dark:bg-[#0A192F] z-[70] shadow-2xl lg:hidden flex flex-col"
                 >
