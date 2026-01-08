@@ -1,19 +1,22 @@
 'use client';
 import React, { useRef } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
+// 👇 FIX 1: 'Variants' import kiya
+import { motion, useScroll, useTransform, Variants } from 'framer-motion';
 import { Briefcase, Bell, Globe, Cpu, Target, Shield, Layers, ArrowRight, CheckCircle, Zap } from 'lucide-react';
 import Navbar from '@/components/Navbar'; 
 import JobHologram from '@/components/home/JobHologram';
 import HeroSearch from '@/components/home/HeroSearch'; 
 
 // --- Animation Variants ---
-const fadeInUp = {
+// 👇 FIX 2: ': Variants' type add kiya
+const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 60 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
-const staggerContainer = {
+// 👇 FIX 3: Yahan bhi type add kiya
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -80,9 +83,8 @@ export default function HomePage() {
                 </span>
               </motion.h1>
               
-              {/* 🔥 FIXED: & -> &amp; and closing tag </motion.p> */}
               <motion.p variants={fadeInUp} className="text-lg text-slate-600 dark:text-gray-400 max-w-xl mb-8 leading-relaxed">
-                FindMeWork uses AI to filter through chaotic Twitter &amp; LinkedIn posts, extracting real job opportunities.
+                FindMeWork uses AI to filter through chaotic Twitter & LinkedIn posts, extracting real job opportunities.
               </motion.p>
 
               <motion.div variants={fadeInUp} className="w-full">
