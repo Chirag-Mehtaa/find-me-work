@@ -1,17 +1,17 @@
 'use client';
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion'; // 👈 'Variants' import kiya hai fix ke liye
 import { Github, Linkedin, Twitter, Zap, Target, Users } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import ParticleBackground from '@/components/about/ParticleBackground';
 
-// Animation Variants
-const fadeInUp = {
+// 👇 Yahan ': Variants' lagaya hai taaki TypeScript shant rahe
+const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 60 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -92,7 +92,6 @@ export default function AboutPage() {
       </section>
 
       {/* --- SECTION 2: THE TEAM --- */}
-      {/* --- SECTION 2: THE TEAM --- */}
       <section className="relative py-32 bg-slate-100 dark:bg-[#060f1e]">
         <div className="container mx-auto px-4">
           
@@ -107,11 +106,10 @@ export default function AboutPage() {
             <p className="mt-4 text-slate-500 dark:text-gray-400">Building the future of recruitment.</p>
           </motion.div>
 
-          {/* 👇 CHANGE HERE: Grid hata kar Flex kar diya aur justify-center laga diya */}
+          {/* Flex Container for Centering */}
           <div className="flex flex-wrap justify-center gap-12 max-w-6xl mx-auto">
             
             {/* --- MEMBER 1: CHIRAG --- */}
-            {/* Wrapper div lagaya taaki card ki width control rahe */}
             <div className="w-full max-w-2xl">
                 <TeamCard 
                 name="Chirag Mehta"
@@ -123,13 +121,9 @@ export default function AboutPage() {
                 />
             </div>
 
-            {/* Agar future mein 'Jay' ko wapas lana ho, toh bas yahan niche same wrapper ke saath copy paste kar dena */}
-
           </div>
         </div>
       </section>
-            
-        
 
     </div>
   );
