@@ -1,7 +1,6 @@
 'use client';
 import React, { useRef } from 'react';
 import Link from 'next/link';
-// 👇 FIX 1: 'Variants' import kiya
 import { motion, useScroll, useTransform, Variants } from 'framer-motion';
 import { Briefcase, Bell, Globe, Cpu, Target, Shield, Layers, ArrowRight, CheckCircle, Zap } from 'lucide-react';
 import Navbar from '@/components/Navbar'; 
@@ -9,13 +8,11 @@ import JobHologram from '@/components/home/JobHologram';
 import HeroSearch from '@/components/home/HeroSearch'; 
 
 // --- Animation Variants ---
-// 👇 FIX 2: ': Variants' type add kiya
 const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 60 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
-// 👇 FIX 3: Yahan bhi type add kiya
 const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -48,16 +45,16 @@ export default function HomePage() {
       ========================================= */}
       <section className="relative pt-10 pb-20 lg:pt-20 lg:pb-32 overflow-hidden border-b border-gray-200 dark:border-white/5">
         
-        {/* Animated Background Glows */}
+        {/* 🔥 FIX 1: Background Glows ko 'hidden md:block' kar diya (Mobile pe band) */}
         <motion.div 
           animate={{ x: [0, 50, 0], y: [0, -50, 0], opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-0 right-0 w-[600px] h-[600px] bg-teal-400/20 dark:bg-teal-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none"
+          className="hidden md:block absolute top-0 right-0 w-[600px] h-[600px] bg-teal-400/20 dark:bg-teal-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none"
         />
         <motion.div 
           animate={{ x: [0, -50, 0], y: [0, 50, 0], opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-[120px] translate-y-1/3 -translate-x-1/3 pointer-events-none"
+          className="hidden md:block absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-[120px] translate-y-1/3 -translate-x-1/3 pointer-events-none"
         />
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -116,11 +113,12 @@ export default function HomePage() {
             </motion.div>
 
             {/* Right: The Hologram Graphic (Floating) */}
+            {/* 🔥 FIX 2: 'hidden lg:flex' add kiya. Mobile pe 3D Hologram gayab, PC pe visible. */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 0.5 }}
-              className="lg:w-1/2 w-full flex items-center justify-center relative perspective-1000"
+              className="hidden lg:flex lg:w-1/2 w-full items-center justify-center relative perspective-1000"
             >
                <JobHologram />
             </motion.div>
