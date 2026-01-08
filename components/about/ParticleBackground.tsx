@@ -5,7 +5,7 @@ import { Points, PointMaterial } from '@react-three/drei';
 import * as random from 'maath/random/dist/maath-random.cjs';
 
 function Stars(props: any) {
-  const ref = useRef<any>();
+  const ref = useRef<any>(null);
   
   // 🔥 FIX 1: Size 5000 -> 6000 kiya (Divisible by 3 for x,y,z)
   // 🔥 FIX 2: useState use kiya taaki bar-bar regenerate na ho
