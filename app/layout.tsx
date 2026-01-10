@@ -14,6 +14,11 @@ import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
+// 🔥🔥 FIX FOR NETLIFY: Ye lines caching disable karengi
+// Taki DB update hote hi site turant down ho jaye
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "FindMeWork",
   description: "Find jobs hidden in the noise.",
