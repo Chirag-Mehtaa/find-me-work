@@ -1,11 +1,10 @@
 'use client';
 import React from 'react';
 import { motion, Variants } from 'framer-motion'; 
-import { Github, Linkedin, Twitter, Zap, Target, Users } from 'lucide-react';
+import { Linkedin, Zap, Target, Users } from 'lucide-react'; // ❌ Unused icons hata diye
 import Navbar from '@/components/Navbar';
 import ParticleBackground from '@/components/about/ParticleBackground';
 
-// 👇 Animation tweak: Mobile ke liye distance kam kiya (y: 60 -> 30)
 const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -16,7 +15,7 @@ const staggerContainer: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15 // Thoda fast kiya
+      staggerChildren: 0.15 
     }
   }
 };
@@ -29,12 +28,10 @@ export default function AboutPage() {
       {/* --- SECTION 1: HERO & SITE INFO --- */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
         
-        {/* 🔥 FIX 1: Heavy 3D Background HIDDEN on Mobile */}
         <div className="hidden md:block absolute inset-0">
            <ParticleBackground />
         </div>
 
-        {/* 🔥 FIX 2: Mobile Fallback (Lightweight Gradient) */}
         <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent via-teal-50/20 to-slate-100/50 dark:via-teal-900/10 dark:to-[#0A192F] pointer-events-none" />
 
         <div className="container mx-auto px-4 relative z-10">
@@ -51,7 +48,6 @@ export default function AboutPage() {
                </span>
             </motion.div>
             
-            {/* 👇 Text size adjust kiya mobile ke liye (text-4xl) */}
             <motion.h1 variants={fadeInUp} className="text-4xl md:text-7xl font-extrabold mb-8 tracking-tight">
               We Don't Find Jobs. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 via-blue-500 to-purple-600">
@@ -68,7 +64,6 @@ export default function AboutPage() {
             </motion.p>
           </motion.div>
 
-          {/* Feature Grid with Glassmorphism */}
           <motion.div 
             initial="hidden"
             whileInView="visible"
@@ -121,7 +116,7 @@ export default function AboutPage() {
                 role="Co-Founder & CTO"
                 image="/chirag-mehta.jpg" 
                 desc="The architect behind the AI core. Chirag specializes in Full-Stack Development and Generative AI. He built the scraping engine that powers FindMeWork's real-time feeds."
-                socials={{ github: "#", linkedin: "#", twitter: "#" }}
+                linkedin="https://www.linkedin.com/in/chirag-mehta-a36867344/"
                 delay={0.1}
                 />
             </div>
@@ -135,61 +130,56 @@ export default function AboutPage() {
 }
 
 // --- Helper Component for Team Cards ---
-function TeamCard({ name, role, image, desc, socials, delay }: any) {
+function TeamCard({ name, role, image, desc, linkedin, delay }: any) {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 30 }} // Mobile pe X slide ki jagah Y slide better lagta hai
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: delay, ease: "easeOut" }}
       className="group relative"
     >
-      {/* Background Glow Effect - Thoda subtle kiya mobile ke liye */}
+      {/* Background Glow */}
       <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-500 to-blue-600 rounded-[2rem] opacity-20 group-hover:opacity-100 blur transition duration-500 hidden md:block"></div>
       
-      {/* Mobile border added manually since glow is hidden */}
+      {/* Main Card */}
       <div className="relative bg-white dark:bg-[#0A192F] rounded-[1.9rem] p-6 md:p-10 flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start h-full transform transition md:hover:-translate-y-2 duration-300 border border-gray-200 dark:border-white/5 md:border-none shadow-lg">
         
-        {/* Profile Image with Fancy Border */}
+        {/* Profile Image */}
         <div className="shrink-0 relative">
           <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden border-4 border-white dark:border-[#112240] shadow-xl">
             <img src={image} alt={name} className="w-full h-full object-cover transform md:group-hover:scale-110 transition duration-500" />
           </div>
-          {/* Floating Icon */}
+          {/* Decorative Icon */}
           <div className="absolute -bottom-3 -right-3 bg-teal-500 text-white p-2 rounded-lg shadow-lg">
             <Zap size={20} />
           </div>
         </div>
 
         {/* Content */}
-        <div className="text-center md:text-left">
+        <div className="text-center md:text-left flex-1 pb-8 md:pb-0">
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">{name}</h3>
           <p className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-blue-500 mb-4 uppercase tracking-wide">
             {role}
           </p>
-          <p className="text-slate-600 dark:text-gray-400 text-sm leading-relaxed mb-6">
+          <p className="text-slate-600 dark:text-gray-400 text-sm leading-relaxed">
             {desc}
           </p>
-
-          {/* Social Icons */}
-          <div className="flex items-center justify-center md:justify-start gap-4">
-            {socials.github && (
-              <a href={socials.github} className="p-2 bg-slate-100 dark:bg-white/5 rounded-full hover:bg-slate-200 dark:hover:bg-white/20 hover:text-teal-600 transition-colors">
-                <Github size={18} />
-              </a>
-            )}
-            {socials.linkedin && (
-              <a href={socials.linkedin} className="p-2 bg-slate-100 dark:bg-white/5 rounded-full hover:bg-slate-200 dark:hover:bg-white/20 hover:text-[#0a66c2] transition-colors">
-                <Linkedin size={18} />
-              </a>
-            )}
-            {socials.twitter && (
-              <a href={socials.twitter} className="p-2 bg-slate-100 dark:bg-white/5 rounded-full hover:bg-slate-200 dark:hover:bg-white/20 hover:text-black dark:hover:text-white transition-colors">
-                <Twitter size={18} />
-              </a>
-            )}
-          </div>
         </div>
+
+        {/* 🔥 LINKEDIN ICON: Absolute Bottom Right Position */}
+        {linkedin && (
+          <a 
+            href={linkedin} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="absolute bottom-6 right-6 p-3 bg-slate-50 dark:bg-white/5 text-[#0a66c2] rounded-full hover:bg-[#0a66c2] hover:text-white transition-all duration-300 shadow-md hover:shadow-lg border border-slate-200 dark:border-white/10 group-hover:scale-110"
+            title="Connect on LinkedIn"
+          >
+            <Linkedin size={22} />
+          </a>
+        )}
+
       </div>
     </motion.div>
   );

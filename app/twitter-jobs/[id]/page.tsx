@@ -1,25 +1,29 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react'; 
 import { 
-  ArrowLeft, MapPin, Globe, Share2, 
-  Building2, Briefcase, Clock, CheckCircle, Twitter 
+  ArrowLeft, MapPin, Share2, 
+  Briefcase, Clock, CheckCircle, Twitter, Bookmark 
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
 export default function TwitterJobDetails() {
   const { id } = useParams();
   const router = useRouter();
+  const { data: session } = useSession(); 
 
   const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
+  
+  const [isSaved, setIsSaved] = useState(false);
 
+  // 1. Fetch Job & Track View
   useEffect(() => {
     if (!id) return;
 
-    // 1. Fetch Job Data
     fetch(`/api/jobs/${id}`)
       .then((res) => res.json())
       .then((data) => {
@@ -36,14 +40,37 @@ export default function TwitterJobDetails() {
         setLoading(false);
       });
 
-    // 🔥 2. TRACK VIEW (Background Call)
-    // Jaise hi page load hoga, database me view count +1 ho jayega
+    // Track View
     fetch('/api/track', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobId: id, type: 'view' })
     }).catch(err => console.error("View track failed", err));
 
   }, [id]);
+
+  // 2. CHECK BOOKMARK STATUS
+  useEffect(() => {
+    if (!id || !session) return;
+
+    fetch('/api/bookmarks')
+      .then(async (res) => {
+         const contentType = res.headers.get("content-type");
+         if (!contentType || !contentType.includes("application/json")) {
+             return { success: false, data: [] };
+         }
+         return res.json();
+      })
+      .then((data) => {
+         if (data.success && Array.isArray(data.data)) {
+            const found = data.data.some((savedJob: any) => 
+               (savedJob._id || savedJob).toString() === id.toString()
+            );
+            setIsSaved(found);
+         }
+      })
+      .catch(err => console.error("Bookmark check failed", err));
+  }, [id, session]);
 
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {
@@ -53,16 +80,67 @@ export default function TwitterJobDetails() {
     }
   };
 
-  // 🔥 3. TRACK CLICK HANDLER
-  // Jab user button dabayega, tab database me click count +1 hoga
+  // 🔥 3. HANDLE BOOKMARK (Duplicate Key Error Fixed)
+  const handleBookmark = async () => {
+    if (!session) {
+        alert("Please login to save tweets!");
+        return;
+    }
+
+    const previousState = isSaved;
+    setIsSaved(!isSaved); // Optimistic Update
+
+    try {
+        const res = await fetch('/api/bookmarks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                jobId: id,
+                // 👇 UPDATED: Added job_id to satisfy old index
+                jobData: {
+                    _id: id,
+                    job_id: id, // 🔥 CRITICAL FIX: Duplicate key error bachane ke liye
+                    job_title: job.job_title || "Twitter Thread",
+                    employer_name: job.employer_name || "Twitter User",
+                    employer_logo: job.employer_logo,
+                    job_city: "Remote",
+                    job_country: "Global",
+                    apply_link: job.link || job.url,
+                    description: job.text,
+                    source: 'twitter'
+                }
+            })
+        });
+
+        const text = await res.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            throw new Error("Server Error (Invalid JSON)");
+        }
+
+        if (!res.ok) {
+            throw new Error(data.message || "Server Error");
+        }
+
+        console.log("Bookmark Success:", data.message);
+
+    } catch (err: any) {
+        console.error("Bookmark failed:", err);
+        setIsSaved(previousState); // Revert UI
+        alert(err.message);
+    }
+  };
+
   const handleApplyClick = () => {
     fetch('/api/track', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobId: id, type: 'click' })
     }).catch(err => console.error("Click track failed", err));
   };
 
-  // Smart Link Logic
   const applyUrl = job ? (job.link || job.apply_link || job.job_url || job.url || '#') : '#';
 
   if (loading) return (
@@ -157,27 +235,30 @@ export default function TwitterJobDetails() {
                   </div>
                </div>
 
-               {/* 🔥 OPEN THREAD BUTTON (With Tracking) */}
+               {/* 🔥 OPEN THREAD BUTTON */}
                <a 
                  href={applyUrl} 
                  target="_blank" 
                  rel="noopener noreferrer"
-                 onClick={handleApplyClick} // <--- Ye line click count badhayegi
+                 onClick={handleApplyClick}
                  className="block w-full bg-black dark:bg-white text-white dark:text-black text-center font-bold py-3 rounded-xl transition-all shadow-lg hover:opacity-80 mb-3 cursor-pointer"
                >
-                 Open Thread 🚀
+                 Open Thread
                </a>
                
-               {/* 🔥 VISIT WEBSITE BUTTON (With Tracking) */}
-               <a 
-                 href={applyUrl} 
-                 target="_blank" 
-                 rel="noopener noreferrer"
-                 onClick={handleApplyClick} // <--- Ye line click count badhayegi
-                 className="flex items-center justify-center gap-2 w-full border border-gray-200 dark:border-white/10 text-slate-700 dark:text-gray-300 font-bold py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+               {/* ✅ BOOKMARK BUTTON */}
+               <button 
+                onClick={handleBookmark}
+                className={`flex items-center justify-center gap-2 w-full border font-bold py-3 rounded-xl transition-all duration-200 ${
+                    isSaved 
+                    ? "bg-slate-900 dark:bg-slate-700 text-white border-transparent shadow-md" 
+                    : "border-gray-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5"
+                }`}
                >
-                 Visit Website <Globe size={16}/>
-               </a>
+                 {isSaved ? <Bookmark size={18} fill="currentColor" /> : <Bookmark size={18} />}
+                 {isSaved ? "Saved to Bookmarks" : "Save Tweet"}
+               </button>
+
             </div>
 
             <div className="bg-slate-100 dark:bg-[#112240]/50 rounded-2xl p-6 border border-transparent dark:border-white/5 text-center">

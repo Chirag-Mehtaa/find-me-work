@@ -110,7 +110,7 @@ export default function HomePage() {
               {/* Stats */}
               <motion.div variants={fadeInUp} className="mt-12 flex justify-center lg:justify-start items-center gap-8 border-t border-gray-200 dark:border-white/5 pt-8 w-full">
                  <div>
-                    <span className="block text-2xl font-bold text-slate-900 dark:text-white font-mono">1,240+</span>
+                    <span className="block text-2xl font-bold text-slate-900 dark:text-white font-mono">300+</span>
                     <span className="text-xs text-slate-500 dark:text-gray-500 uppercase tracking-wider">Daily Posts</span>
                  </div>
                  <div className="w-px h-8 bg-gray-300 dark:bg-white/10"></div>
@@ -203,15 +203,18 @@ export default function HomePage() {
       {/* =========================================
           🔥 SECTION: WHY US (Optimized Parallax)
       ========================================= */}
-      <section className="py-24 bg-slate-50 dark:bg-[#0A192F] relative overflow-hidden">
+     <section className="py-24 bg-slate-50 dark:bg-[#0A192F] relative overflow-hidden">
         {/* Parallax Background - ONLY DESKTOP */}
         <motion.div 
-          style={{ y: isMobile ? 0 : yBackground }} // 🔥 Mobile par 0 movement
+          style={{ y: isMobile ? 0 : yBackground }} 
           className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"
         ></motion.div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col md:flex-row gap-12 items-center">
+        {/* FIX 1: Max-width 7xl aur px-6/12 add kiya taaki content screen edges se door rahe */}
+        <div className="container mx-auto px-6 md:px-12 lg:px-8 max-w-7xl relative z-10">
+          
+          {/* FIX 2: Gap badhaya (gap-12 se gap-16/24) taaki Text aur Cards alag-alag dikhein */}
+          <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
             
             {/* Left Column */}
             <motion.div 
@@ -219,17 +222,17 @@ export default function HomePage() {
                whileInView={{ opacity: 1, x: 0 }}
                viewport={{ once: true }}
                transition={{ duration: 0.5 }}
-               className="md:w-1/2"
+               className="lg:w-1/2" 
             >
-              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
+              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-8 leading-tight">
                 Stop applying to <br/> 
-                <span className="text-red-500 decoration-red-500/30 underline decoration-wavy">ghost jobs.</span>
+                <span className="text-red-500 decoration-red-500/30 underline decoration-wavy underline-offset-4">ghost jobs.</span>
               </h2>
-              <p className="text-lg text-slate-600 dark:text-gray-300 mb-8">
+              <p className="text-lg text-slate-600 dark:text-gray-300 mb-10 max-w-lg leading-relaxed">
                 Most job boards are graveyards. FindMeWork connects you to opportunities that are alive, urgent, and often unlisted.
               </p>
               
-              <ul className="space-y-4">
+              <ul className="space-y-6"> {/* List items ke beech space badhaya */}
                 {[
                   "Real-time updates every 15 minutes",
                   "Filter by Tech Stack (React, Node, Python)",
@@ -242,14 +245,14 @@ export default function HomePage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className="flex items-center gap-3 text-slate-700 dark:text-gray-300 font-medium"
+                    className="flex items-center gap-4 text-slate-700 dark:text-gray-300 font-medium text-lg"
                   >
-                    <CheckCircle size={20} className="text-teal-500" /> {item}
+                    <CheckCircle size={22} className="text-teal-500 flex-shrink-0" /> {item}
                   </motion.li>
                 ))}
               </ul>
 
-              <button className="mt-8 px-8 py-3 rounded-full border border-slate-300 dark:border-white/10 hover:border-teal-500 dark:hover:border-teal-400 text-slate-900 dark:text-white font-bold transition-colors flex items-center gap-2 group">
+              <button className="mt-10 px-10 py-4 rounded-full border border-slate-300 dark:border-white/10 hover:border-teal-500 dark:hover:border-teal-400 text-slate-900 dark:text-white font-bold transition-colors flex items-center gap-3 group">
                 Explore Features <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </motion.div>
@@ -259,27 +262,32 @@ export default function HomePage() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="md:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-4"
+              // FIX 3: Grid gap badhaya (gap-4 se gap-6) taaki cards apas me na chipkein
+              className="lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-6"
             >
-               <div className="p-6 bg-white dark:bg-[#112240] rounded-2xl shadow-xl border border-gray-100 dark:border-white/5">
+               <div className="p-8 bg-white dark:bg-[#112240] rounded-2xl shadow-xl border border-gray-100 dark:border-white/5">
                   <Shield size={32} className="text-teal-500 mb-4" />
-                  <h4 className="font-bold text-lg dark:text-white mb-2">Zero Spam</h4>
-                  <p className="text-xs text-slate-500 dark:text-gray-400">We auto-block recruiters and agencies. Only direct company posts.</p>
+                  <h4 className="font-bold text-xl dark:text-white mb-3">Zero Spam</h4>
+                  <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed">We auto-block recruiters and agencies. Only direct company posts.</p>
                </div>
-               <div className="p-6 bg-white dark:bg-[#112240] rounded-2xl shadow-xl border border-gray-100 dark:border-white/5 sm:mt-8">
+               
+               {/* Margin Top badhaya staggered look ke liye */}
+               <div className="p-8 bg-white dark:bg-[#112240] rounded-2xl shadow-xl border border-gray-100 dark:border-white/5 sm:mt-12">
                   <Layers size={32} className="text-blue-500 mb-4" />
-                  <h4 className="font-bold text-lg dark:text-white mb-2">Smart Sorting</h4>
-                  <p className="text-xs text-slate-500 dark:text-gray-400">Jobs are categorized by skill level: Junior, Senior, and Founder.</p>
+                  <h4 className="font-bold text-xl dark:text-white mb-3">Smart Sorting</h4>
+                  <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed">Jobs are categorized by skill level: Junior, Senior, and Founder.</p>
                </div>
-               <div className="p-6 bg-white dark:bg-[#112240] rounded-2xl shadow-xl border border-gray-100 dark:border-white/5">
+               
+               <div className="p-8 bg-white dark:bg-[#112240] rounded-2xl shadow-xl border border-gray-100 dark:border-white/5">
                   <Zap size={32} className="text-yellow-500 mb-4" />
-                  <h4 className="font-bold text-lg dark:text-white mb-2">Lightning Fast</h4>
-                  <p className="text-xs text-slate-500 dark:text-gray-400">Be the first to apply. Alerts are sent the moment a tweet goes live.</p>
+                  <h4 className="font-bold text-xl dark:text-white mb-3">Lightning Fast</h4>
+                  <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed">Be the first to apply. Alerts are sent the moment a tweet goes live.</p>
                </div>
-               <div className="p-6 bg-white dark:bg-[#112240] rounded-2xl shadow-xl border border-gray-100 dark:border-white/5 sm:mt-8">
+               
+               <div className="p-8 bg-white dark:bg-[#112240] rounded-2xl shadow-xl border border-gray-100 dark:border-white/5 sm:mt-12">
                   <Briefcase size={32} className="text-purple-500 mb-4" />
-                  <h4 className="font-bold text-lg dark:text-white mb-2">Contract Work</h4>
-                  <p className="text-xs text-slate-500 dark:text-gray-400">Special filters for Freelancers and Fractional roles.</p>
+                  <h4 className="font-bold text-xl dark:text-white mb-3">Contract Work</h4>
+                  <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed">Special filters for Freelancers and Fractional roles.</p>
                </div>
             </motion.div>
 

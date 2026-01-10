@@ -8,14 +8,21 @@
   --background-end-rgb: 5, 12, 22;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      rgb(var(--background-start-rgb)),
-      rgb(var(--background-end-rgb))
-    );
-  min-height: 100vh;
+/* 🔥 RENDERING FIXES ADDED HERE */
+@layer base {
+  body {
+    @apply antialiased subpixel-antialiased; /* Smooths out fonts */
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+        to bottom,
+        rgb(var(--background-start-rgb)),
+        rgb(var(--background-end-rgb))
+      );
+    min-height: 100vh;
+    text-rendering: optimizeLegibility; /* Removes font clipping artifacts */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
 /* Custom Utilities for Animations */
@@ -25,5 +32,11 @@ body {
   }
   .transform-style-3d {
     transform-style: preserve-3d;
+  }
+  
+  /* Helper to force GPU rendering if needed on specific elements */
+  .gpu-render {
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 }

@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession, signIn, signOut } from "next-auth/react";
-import { Menu, X, Zap, Linkedin, Twitter, Sun, Moon, Info, LogOut, User, LayoutDashboard } from 'lucide-react';
+// 👇 'Bell' import kiya
+import { Menu, X, Zap, Linkedin, Twitter, Sun, Moon, Info, LogOut, User, LayoutDashboard, Shield, MessageSquare, Bell } from 'lucide-react';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -20,8 +21,7 @@ export default function Navbar() {
     }
   }, []);
 
-  // 🔥🔥🔥 2. NEW: DATABASE SYNC LOGIC 🔥🔥🔥
-  // As soon as user logs in, save them to MongoDB
+  // 2. DATABASE SYNC LOGIC
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
       fetch('/api/auth/sync', {
@@ -52,7 +52,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#0A192F]/90 backdrop-blur-md border-b border-gray-200 dark:border-white/10 transition-colors duration-300">
+    <nav className="sticky top-0 z-50 w-full bg-white dark:bg-[#0A192F] border-b border-gray-200 dark:border-white/10 transition-colors duration-300">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
@@ -67,10 +67,25 @@ export default function Navbar() {
           </Link>
 
           {/* DESKTOP LINKS */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
             <Link href="/" className="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Home</Link>
+            
+            {/* 🔥 UPDATES BUTTON ADDED HERE */}
+            <Link href="/notice" className="relative text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors flex items-center gap-1.5">
+                <Bell size={16} /> Updates
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            </Link>
+
             <Link href="/linkedin-jobs" className="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-[#0a66c2] transition-colors flex items-center gap-1.5"><Linkedin size={16} /> LinkedIn Feeds</Link>
             <Link href="/twitter-jobs" className="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors flex items-center gap-1.5"><Twitter size={16} /> Twitter Feeds</Link>
+            
+            {/* Contact Us */}
+            <Link href="/contact" className="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors flex items-center gap-1.5"><MessageSquare size={16} /> Contact Us</Link>
+            
+            {/* Privacy Policy */}
+            <Link href="/privacy-policy" className="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors flex items-center gap-1.5"><Shield size={16} /> Privacy Policy</Link>
+            
+            {/* About Us */}
             <Link href="/about" className="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors flex items-center gap-1.5"><Info size={16} /> About Us</Link>
           </div>
 
@@ -83,14 +98,14 @@ export default function Navbar() {
             {status === "authenticated" ? (
               <div className="flex items-center gap-3">
                   
-                  {/* Dashboard Link (For easy access) */}
+                  {/* Dashboard Link */}
                   <Link href="/dashboard" className="hidden lg:flex items-center gap-1 bg-purple-50 text-purple-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-purple-100 transition-colors">
-                     <LayoutDashboard size={14}/> Dashboard
+                      <LayoutDashboard size={14}/> Dashboard
                   </Link>
 
                   <div className="text-right hidden lg:block">
-                     <p className="text-xs text-slate-500 dark:text-gray-400">Welcome,</p>
-                     <p className="text-sm font-bold text-slate-900 dark:text-white max-w-[100px] truncate">{session.user?.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-gray-400">Welcome,</p>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white max-w-[100px] truncate">{session.user?.name}</p>
                   </div>
                   
                   {session.user?.image ? (
@@ -112,12 +127,12 @@ export default function Navbar() {
 
           {/* MOBILE MENU TOGGLE */}
           <div className="md:hidden flex items-center gap-4">
-             <button onClick={toggleTheme} className="p-2 rounded-lg bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-yellow-400">
-               {isDark ? <Sun size={20} /> : <Moon size={20} />}
-             </button>
-             <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors">
-               {isOpen ? <X size={24} /> : <Menu size={24} />}
-             </button>
+              <button onClick={toggleTheme} className="p-2 rounded-lg bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-yellow-400">
+                {isDark ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+              <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors">
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
           </div>
         </div>
       </div>
@@ -127,14 +142,22 @@ export default function Navbar() {
         <div className="md:hidden bg-white dark:bg-[#0A192F] border-b border-gray-200 dark:border-white/10 shadow-xl animate-in slide-in-from-top-5 duration-200">
           <div className="px-4 pt-2 pb-6 space-y-2">
             <Link href="/" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-lg text-base font-medium text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-teal-600">Home</Link>
+            
+            {/* 🔥 Added Updates in Mobile Menu */}
+            <Link href="/notice" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-white/5"><Bell size={18} /> Updates</Link>
+
             <Link href="/linkedin-jobs" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-white/5"><Linkedin size={18} /> LinkedIn Feeds</Link>
             <Link href="/twitter-jobs" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-white/5"><Twitter size={18} /> Twitter Feeds</Link>
+            
+            <Link href="/contact" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-white/5"><MessageSquare size={18} /> Contact Us</Link>
+            
+            <Link href="/privacy-policy" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-white/5"><Shield size={18} /> Privacy Policy</Link>
             <Link href="/about" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-white/5"><Info size={18} /> About Us</Link>
 
             <div className="pt-4 mt-2 border-t border-gray-100 dark:border-white/5">
                {status === "authenticated" ? (
                  <>
-                   {/* 🔥 MOBILE PROFILE SECTION */}
+                   {/* MOBILE PROFILE SECTION */}
                    <div className="flex items-center gap-3 px-2 mb-4">
                       {session.user?.image ? (
                         <img src={session.user.image} alt="User" className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/10" />
